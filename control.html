@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Scoreboard Control</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="style/main.css" />
+    <script src="scripts/update.js"></script>
+    <script src="scripts/control.js"></script>  
+</head>
+<body onload="onLoad()" class="container d-flex flex-wrap align-items-start">
+    <form id="score-form" class="bootstrap">
+        <h4 class=card-title>Scores</h4>
+        <fieldset>
+            <p>
+                <label for=team1.score><span name="team1.name">Red</span>: </label>
+                <input id=team1.score type="number" name="team1.score" value="0">
+            </p>
+            <p>
+                <label for=team2.score><span name="team2.name">Blue</span>: </label>
+                <input id=team2.score type="number" name="team2.score" value="0">
+            </p>
+            <template id="team-score-template">
+            <p id="team-{{x}}-score">
+                <label for=team2.score><span name="team{{x}}.name">Name</span>: </label>
+                <input id=team2.score type="number" name="team{{x}}.score" value="0">
+            </p>
+            </template>
+            <button class="btn btn-outline-primary" type=button onclick="updateScore()">Update</button>
+        </fieldset>
+    </form>
+    <form id="settings-form" class=" bootstrap" onchange="updateSettings()">
+        <h4 class=card-title>Settings</h4>
+        <fieldset id="team-1-settings">
+            <h5>Team 1</h5>
+            <div class=row>
+            <p class=col>
+                <label>Name: </label>
+                <input type="text" name="team1.name" value="Red">
+            </p>
+            <p class=col>
+                <label for="team1.color">Color: </label>
+                <input id="team1.color" type="color" name="team1.color" value="#ff0000">
+            </p>
+            </div>
+        </fieldset>
+        <fieldset id="team-2-settings">
+            <h5>Team 2</h5>
+            <div class=row>
+            <p class=col>
+                <label>Name: </label>
+                <input type="text" name="team2.name" value="Blue">
+            </p>
+            <p class=col>
+                <label for="team2.color">Color: </label>
+                <input id="team2.color" type="color" name="team2.color" value="#0000ff">
+            </p>
+            </div>
+        </fieldset>
+        <template id="team-settings-template"><fieldset class="extra-team" id="team-{{x}}-settings">
+            <div class="d-flex justify-content-between">
+                <h5>Team {{x}}</h5>
+                <button type="button" onclick="removeTeam({{x}})" class="close" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class=row>
+            <p class=col>
+                <label>Name: </label>
+                <input type="text" name="team{{x}}.name" value="{{defaultName}}">
+            </p>
+            <p class=col>
+                <label>Color: </label>
+                <input type="color" name="team{{x}}.color" value="{{defaultColor}}">
+            </p>
+            </div>
+        </fieldset></template>
+        <div class="d-flex justify-content-between">
+            <button class="btn btn-success" type=button onclick="addTeam()">Add Team</button>
+            <button class="btn btn-outline-danger" type=button onclick="resetSettings()">Reset</button>            
+        </div>
+    </form>
+</body>
+</html>
