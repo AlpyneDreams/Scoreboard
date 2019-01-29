@@ -8,16 +8,17 @@
     height: 100%;
 }
 
-
-body {
+body.container {
     padding-top: 2rem;
 }
 
 form.bootstrap {
     @extend .card;
     @extend .card-body;
-    @extend .m-sm-2;
+    @extend .mr-sm-2;
+    @extend .mb-sm-2;
 
+    flex: 2.5 2.5 auto;
 
     input[type=number],
     input[type=text],
@@ -34,16 +35,153 @@ form.bootstrap {
         display: block;
     }
 
+    ::-webkit-inner-spin-button {
+        display: none;
+    }
+
     fieldset {
         @extend .form-group;
     }
 
-    fieldset {
+    fieldset:not(.no-hr) {
         //margin-top: 1rem;
         padding-top: 1rem;
         border-top: 1px solid rgba(0, 0, 0, 0.1); 
     }
-    
 
+    .custom-control:not(:disabled) * {
+        cursor: pointer;
+    }
+
+}
+.input-group .btn-stack {
+    cursor: default !important;
+    border: 1px solid #ced4da;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    min-width: 30px;
+
+    .btn {
+        box-shadow: none;
+        height: 50%;
+        margin: 0;
+        padding: 0;
+        line-height: 0;
+        border: none;
+        border-radius: 0;
+        font-size: 8px;
+    }
+
+    .btn:focus {
+        box-shadow: none;
+    }
+
+    .btn + .btn {
+        border-top: 1px solid #ced4da;
+    }
+}
+
+.input-group .btn-increment {
+    width: 32px;
+    text-align: center;
+    border: 1px solid #ced4da;
+}
+
+html, body {
+    height: 100%;
+}
+
+.d-flex.flex-fill-all {
+    * {
+        //@extend .flex-fill;
+        @extend .mr-sm-1;
+    }
+}
+
+.scoreboard-body {
+    //background-color: #222;
+    background: linear-gradient(to bottom, #333333 0%, #0e0e0e 100%);
+}
+
+.static-view {
+    user-select: none;
+    //cursor: none;
+}
+
+@font-face {
+    font-family: 'Chunk Five Ex';
+    src: url(fonts/chunk_five_ex.ttf);
+}
+
+@font-face {
+    font-family: 'Varsity';
+    src: url(fonts/varsity_regular.ttf);
+}
+
+
+@font-face {
+    font-family: 'Gunplay';
+    src: url(fonts/gunplay_rg.ttf);
+}
+
+
+h1#title-head {
+    background-color: #fff;
+    font-family: 'Chunk Five Ex';
+    text-align: center;
+    font-size: 10vmin;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    span {
+        color: red;
+        margin: 10px 0;
+    }
+
+    span + span {
+        color: blue;
+    }
+}
+
+.scoreboard {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+
+    margin: 0 5vw;
+}
+
+.scorecard {
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    flex: 1;
+
+    margin: 0 2vw;
+
+    max-width: 35vmax;
+}
+
+.title, .score {
+    text-align: center;
+    flex-direction: column;
+    justify-content: center;
+
+}
+
+.title {
+    font-family: 'Varsity';
+    text-transform: uppercase;
+    font-size: 12vh;
+}
+
+.score {
+    font-family: 'Chunk Five Ex';
+    display: flex;
+    font-size: 35vh;
 }
 

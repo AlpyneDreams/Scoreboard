@@ -5,23 +5,20 @@
     <title>Scoreboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" media="screen" href="style/main.css" />
-    <script src="scripts/update.js"></script>  
-    <script src="scripts/scoreboard.js"></script>  
+    <script src="scripts/control.js"></script>  
 </head>
-<body onload="scoreboardInit()">
-    <p class=team1-colorable>
-        <label name="team1"><span name="team1.name"></span>: </label>
-        <span name="team1.score">0</span>
-    </p>
-    <p class=team2-colorable>
-        <label name="team2"><span name="team2.name"></span>: </label>
-        <span name="team2.score">0</span>
-    </p>
-    <template id="team-score-template">
-    <p class=team{{x}}-colorable>
-        <label name="team{{x}}"><span name="team{{x}}.name"></span>: </label>
-        <span name="team{{x}}.score">0</span>
-    </p>
-    </template>
+<body onload="onLoad()" class="static-view scoreboard-body text-light d-flex flex-column justify-content-start">
+    <h1 id="title-head"><span name=title0>Comedy</span><span name=title1>Sportz</span></h1>
+    <div class="scoreboard">
+        <div class="scorecard">
+            <div name=team1.name class="title team1-colorable-text"></div>
+            <div name=team1.score class="score team1-colorable"></div>
+        </div>
+
+        <div class="scorecard">
+            <div name=team2.name class="title team2-colorable-text"></div>
+            <div name=team2.score class="score team2-colorable"></div>
+        </div>
+    </div>
 </body>
 </html>

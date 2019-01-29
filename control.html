@@ -5,32 +5,76 @@
     <title>Scoreboard Control</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" media="screen" href="style/main.css" />
-    <script src="scripts/update.js"></script>
-    <script src="scripts/control.js"></script>  
+    
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+        crossorigin="anonymous"></script>
+
+    <script src="scripts/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="scripts/control.js"></script>
 </head>
 <body onload="onLoad()" class="container d-flex flex-wrap align-items-start">
-    <form id="score-form" class="bootstrap">
-        <h4 class=card-title>Scores</h4>
-        <fieldset>
-            <p>
-                <label for=team1.score><span name="team1.name">Red</span>: </label>
-                <input id=team1.score type="number" name="team1.score" value="0">
-            </p>
-            <p>
-                <label for=team2.score><span name="team2.name">Blue</span>: </label>
-                <input id=team2.score type="number" name="team2.score" value="0">
-            </p>
-            <template id="team-score-template">
-            <p id="team-{{x}}-score">
-                <label for=team2.score><span name="team{{x}}.name">Name</span>: </label>
-                <input id=team2.score type="number" name="team{{x}}.score" value="0">
-            </p>
-            </template>
-            <button class="btn btn-outline-primary" type=button onclick="updateScore()">Update</button>
-        </fieldset>
-    </form>
-    <form id="settings-form" class=" bootstrap" onchange="updateSettings()">
+    
+    <div class="d-flex flex-column flex-fill">
+        <form id="score-form" class="bootstrap" onchange="onChangeScore()">
+            <h4 class="card-title">Scores</h4>
+            <fieldset>
+                <p class="custom-control custom-checkbox">
+                    <input type="checkbox" class=custom-control-input name=autoUpdate id=auto-update checked onchange="changeAutoUpdate()">
+                    <label class=custom-control-label for=auto-update>Auto-Update</label>
+                </p>
+                
+                <div>
+                    <label for=team1.score><span name="team1.name">Red</span>: </label>
+                    <div class="input-group mb-3">
+                        <input id=team1.score type=number name="team1.score" value="0">
+                        <div class="input-group-append">
+                            <div class="btn btn-stack">
+                                <input type=button value="▲" amount=1 class="btn-increment btn btn-sm btn-light">    
+                                <input type=button value="▼" amount=-1 class="btn-increment btn btn-sm btn-light">    
+                            </div>
+                            <input type=button value="+5" amount=5 class="btn-increment btn btn-sm btn-light">
+                            <input type=button value="-5" amount=-5 class="btn-increment btn btn-sm btn-light">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label for=team2.score><span name="team2.name">Blue</span>: </label>
+                    <div class="input-group mb-3">
+                        <input id=team1.score type=number name="team2.score" value="0">
+                        <div class="input-group-append">
+                            <div class="btn btn-stack">
+                                <input type=button value="▲" amount=1 class="btn-increment btn btn-sm btn-light">    
+                                <input type=button value="▼" amount=-1 class="btn-increment btn btn-sm btn-light">    
+                            </div>
+                                <input type=button value="+5" amount=5 class="btn-increment btn btn-sm btn-light">
+                            <input type=button value="-5" amount=-5 class="btn-increment btn btn-sm btn-light">
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <div>
+                <button class="btn btn-sm btn-primary" type=button onclick="writeScore()">Update</button>
+            </div>
+        </form>
+        <div class="card mr-sm-2">
+            <div class="card-body">
+                <button class="btn btn-sm btn-outline-success" type=button id="btn-open-window" onclick="openWindow()">Open Window</button>
+                <button class="btn btn-sm btn-outline-secondary" type=button id="btn-fullscreen" disabled onclick="winFullscreen()">Fullscreen</button>
+            </div>
+        </div>
+    </div>
+    <form id="settings-form" class="bootstrap" onchange="writeSettings()">
         <h4 class=card-title>Settings</h4>
+
+        <fieldset id="team-1-settings">
+            <div class="form-inline my-sm-2">
+            <label class="mr-sm-2">Title: </label>
+            <input type="text" name="title0" placeholder="Score" value="Score">
+            <input type="text" name="title1" placeholder="Board" value="Board">
+            </div>
+        </fieldset>
+
         <fieldset id="team-1-settings">
             <h5>Team 1</h5>
             <div class=row>
@@ -44,6 +88,7 @@
             </p>
             </div>
         </fieldset>
+
         <fieldset id="team-2-settings">
             <h5>Team 2</h5>
             <div class=row>
@@ -53,32 +98,37 @@
             </p>
             <p class=col>
                 <label for="team2.color">Color: </label>
-                <input id="team2.color" type="color" name="team2.color" value="#0000ff">
+                <input id="team2.color" type="color" name="team2.color" value="#2264ff">
             </p>
             </div>
         </fieldset>
-        <template id="team-settings-template"><fieldset class="extra-team" id="team-{{x}}-settings">
-            <div class="d-flex justify-content-between">
-                <h5>Team {{x}}</h5>
-                <button type="button" onclick="removeTeam({{x}})" class="close" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class=row>
-            <p class=col>
-                <label>Name: </label>
-                <input type="text" name="team{{x}}.name" value="{{defaultName}}">
-            </p>
-            <p class=col>
-                <label>Color: </label>
-                <input type="color" name="team{{x}}.color" value="{{defaultColor}}">
-            </p>
-            </div>
-        </fieldset></template>
-        <div class="d-flex justify-content-between">
-            <button class="btn btn-success" type=button onclick="addTeam()">Add Team</button>
-            <button class="btn btn-outline-danger" type=button onclick="resetSettings()">Reset</button>            
+
+        <div>
+            <button class="btn btn-sm btn-danger" type=button onclick="resetSettings()">Reset All</button>          
         </div>
     </form>
+
+    <div class="modal" id="alert-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title">Warning</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    <p>The scoreboard popup window is on the same screen as the control panel. 
+                        You should probably drag the popup window onto the projector screen.<br><br>
+                        Are you sure you want to make the scoreboard fullscreen anyway?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-dismiss="modal">Back</button>
+                    <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal" id="alert-modal-button">Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

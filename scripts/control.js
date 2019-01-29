@@ -1,90 +1,215 @@
-function updateData(formData) {
-    for (var [key, value] of formData.entries()) {
-        if (localStorage.getItem(key) != value) {
-            console.log(`Updated: ${key} = ${value}`)
-            localStorage.setItem(key, value)
-            update({key, newValue: value})
-        }
+
+var broadcast = new BroadcastChannel('scoreboard')
+
+// evaluate all localStorage values
+function updateAll() {
+    for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i)
+        var value = localStorage.getItem(key)
         
+        update(key, value)
     }
 }
 
-function updateScore() {
-    updateData(new FormData(document.getElementById("score-form")))
+function update(key, value) {
+    var elements = document.getElementsByName(key)
+    if (elements) {
+        console.log(`Updated: ${key} = ${value}`)
+        elements.forEach(element => {
+            if ([null, undefined, ""].includes(value)) value = element.getAttribute('default') || value
+            //console.log(element)
+            if (element) {
+                if (element.tagName === 'INPUT') {
+                    if (element.getAttribute('type') === 'checkbox') {
+                        element.checked = value
+                    } else {
+                        element.value = value
+                    }
+                } else {
+                    element.textContent = value
+                }
+            }
+        })
+    }
+    if (key && key.endsWith('.color')) {
+        var base = key.slice(0, -1 * '.color'.length)
+        var elements = document.querySelectorAll(`.${base}-colorable`)
+
+        
+        if (elements) {
+            //console.log(elements)
+            elements.forEach(element => {
+                element.style = `color: #fff; background-color: ${value}`
+            })
+        }
+
+        elements = document.querySelectorAll(`.${base}-colorable-text`)
+
+        if (elements) {
+            elements.forEach(element => {
+                element.style = `color: ${value};` + element.style
+            })
+        }
+    }
+
+}
+
+broadcast.onmessage = function(e) {
+    update(e.data, localStorage.getItem(e.data))
+}
+
+/**
+ * @param {HTMLFormElement} form
+ * @returns {Object}
+ */
+function getFormData(form) {
+
+    if (!form) return null
+
+    var obj = {}
+    for (var el of form.elements) {
+        if (el.name && ['TEXTAREA', 'SELECT'].includes(el.tagName)) {
+            obj[el.name] = el.value
+        } else if (el.tagName === 'INPUT') switch (el.type) {
+            case 'button':
+                break;
+            case 'checkbox':
+                obj[el.name] = el.checked
+                break;
+            case 'radio':
+                if (el.checked) {
+                    obj[el.name] = el.value
+                } else {
+                    var selection = document.querySelector(`input[name=${el.name}]:checked`)
+                    obj[el.name] = selection ? selection.value : null
+                }
+                break;
+            default:
+                obj[el.name] = el.value
+                break;
+        } else {
+            // fieldset, button, etc
+        }
+    }
+
+    return obj
+}
+
+// update localStorage data
+function writeData(formData) {
+
+    if (!formData) return
+
+    for (var [key, value] of Object.entries(formData)) {
+        if (localStorage.getItem(key) !== value) {
+            //console.log(`Written: ${key} = ${value}`)
+            localStorage.setItem(key, value)
+            broadcast.postMessage(key)
+            update(key, value)
+        }
+    }
+
+}
+
+function writeScore() {
+    writeData(getFormData(document.getElementById("score-form")))
+}
+
+function onChangeScore() {
+    if (document.querySelector("#auto-update").checked) {
+        writeScore()
+    }
+}
+
+function changeAutoUpdate() {
+    if (!document.querySelector("#auto-update").checked)
+        writeData({autoUpdate: document.querySelector('#auto-update').checked})
+}
+
+function writeSettings() {
+    writeData(getFormData(document.getElementById("settings-form")))
 }
 
 function resetSettings() {
-    localStorage.removeItem('numTeams')
-
     document.getElementById("settings-form").reset()
-    updateSettings()
-
-    document.querySelectorAll("fieldset.extra-team").forEach(x => {
-        x.remove()
-    })
+    writeSettings()
 }
 
-function updateSettings() {
-    updateData(new FormData(document.getElementById("settings-form")))
+var currentOpenWindow = null
+
+function openWindow() {
+    if (!currentOpenWindow)
+        currentOpenWindow = window.open(location.origin + '/scoreboard.html', '', 'width=960,height=720,centerscreen,dependent,alwaysRaised')
+
+    var button = document.getElementById('btn-open-window')
+    button.classList.replace('btn-outline-success', 'btn-outline-danger')
+    button.textContent = "Close Window"
+    button.onclick = closeWindow
+    currentOpenWindow.addEventListener('beforeunload', closeWindow)
+
+    document.getElementById('btn-fullscreen').disabled = false
 }
 
+function closeWindow() {
+    if (currentOpenWindow)
+        currentOpenWindow.close()
+    
+    currentOpenWindow = null
+
+    var button = document.getElementById('btn-open-window')
+    button.classList.replace('btn-outline-danger', 'btn-outline-success')
+    button.textContent = "Open Window"
+    button.onclick = openWindow
+
+    document.getElementById('btn-fullscreen').disabled = true
+}
+
+/**
+ * 
+ * @param {Screen} s
+ */
+function screenString(s) {
+    return `${s.width}x${s.height} ${s.orientation.type} ${s.colorDepth} ${s.pixelDepth}`
+}
+
+function winFullscreen(force = false) {
+    if (!currentOpenWindow) return
+
+    if (!force && screenString(currentOpenWindow.screen) === screenString(window.screen)) {
+
+        document.getElementById('alert-modal-button').addEventListener('click', () => {
+            winFullscreen(true)
+        }, {once: true})
+        $('#alert-modal').modal()
+        return
+    }
+
+    currentOpenWindow.focus()
+    if (!currentOpenWindow.document.fullscreenElement)
+        currentOpenWindow.document.documentElement.requestFullscreen()
+    else
+        currentOpenWindow.document.exitFullscreen()
+}
 
 function onLoad() {
 
-    var teamCount = localStorage.getItem('numTeams')
-    if (!teamCount) {
-        localStorage.setItem('numTeams', '2')
-    } else {
-        for (var i = 0; i < teamCount - 2; i++) {
-            addTeam()
-        }
-    }
-
-    /*for (var i = 0; i < localStorage.length; i++) {
-        var key = localStorage.key(i)
-        var value = localStorage.getItem(key)
-        var element = document.getElementsByName(key)[0]
-        
-        if (element) {
-            //console.log(element)
-            element.textContent = value
-        }
-    }*/
-
     updateAll()
+    writeSettings()
+    writeScore()
+
+    document.querySelectorAll(".btn-increment").forEach(btn => {
+        var input = btn.parentElement.parentElement.parentElement.querySelector("input")
+        btn.addEventListener('click', () => {
+            input.value = parseInt(input.value) + parseInt(btn.getAttribute('amount'))
+            onChangeScore()
+        })
+    })
 }
 
-var numTeams = 2
-
-function addTeam() {
-    numTeams++;
-    localStorage.setItem('numTeams', numTeams)
-
-    var template = document.getElementById("team-settings-template")
-    var team = template.cloneNode(true)
-    team.innerHTML = team.innerHTML
-                    .replace(/{{x}}/gi, numTeams)
-                    .replace(/{{defaultColor}}/gi, "#000000")
-                    .replace(/{{defaultName}}/gi, "Name")
-    team = team.content
-    template.parentElement.insertBefore(team, template)
-    
-
-    template = document.getElementById("team-score-template")
-    team = template.cloneNode(true)
-    team.innerHTML = team.innerHTML
-                    .replace(/{{x}}/gi, numTeams)
-                    .replace(/{{defaultColor}}/gi, "#000000")
-                    .replace(/{{name}}/gi, "Name")
-    team = team.content
-    template.parentElement.insertBefore(team, template)
+function onBeforeUnload() {
+    if (currentOpenWindow)
+        closeWindow()
 }
+window.addEventListener('beforeunload', onBeforeUnload)
 
-function removeTeam(i) {
-    document.querySelector(`#team-${i}-settings`).remove()
-    document.querySelector(`#team-${i}-score`).remove()
-    numTeams--;
 
-    localStorage.setItem('numTeams', numTeams)
-    localStorage.setItem('lastRemovedTeam', numTeams+1)
-}

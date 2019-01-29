@@ -7654,7 +7654,7 @@ button.bg-dark:focus {
     margin-top: 0.25rem !important;
   }
 
-  .mr-sm-1,
+  .mr-sm-1, .d-flex.flex-fill-all *,
 .mx-sm-1 {
     margin-right: 0.25rem !important;
   }
@@ -7669,7 +7669,7 @@ button.bg-dark:focus {
     margin-left: 0.25rem !important;
   }
 
-  .m-sm-2, form.bootstrap {
+  .m-sm-2 {
     margin: 0.5rem !important;
   }
 
@@ -7678,12 +7678,12 @@ button.bg-dark:focus {
     margin-top: 0.5rem !important;
   }
 
-  .mr-sm-2,
+  .mr-sm-2, form.bootstrap,
 .mx-sm-2 {
     margin-right: 0.5rem !important;
   }
 
-  .mb-sm-2,
+  .mb-sm-2, form.bootstrap,
 .my-sm-2 {
     margin-bottom: 0.5rem !important;
   }
@@ -9684,16 +9684,131 @@ h3 {
   height: 100%;
 }
 
-body {
+body.container {
   padding-top: 2rem;
 }
 
+form.bootstrap {
+  flex: 2.5 2.5 auto;
+}
 form.bootstrap input[type=color] {
   display: block;
 }
-form.bootstrap fieldset {
+form.bootstrap ::-webkit-inner-spin-button {
+  display: none;
+}
+form.bootstrap fieldset:not(.no-hr) {
   padding-top: 1rem;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+form.bootstrap .custom-control:not(:disabled) * {
+  cursor: pointer;
+}
+
+.input-group .btn-stack {
+  cursor: default !important;
+  border: 1px solid #ced4da;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  min-width: 30px;
+}
+.input-group .btn-stack .btn, .input-group .btn-stack form.bootstrap input[type=color], form.bootstrap .input-group .btn-stack input[type=color] {
+  box-shadow: none;
+  height: 50%;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+  border: none;
+  border-radius: 0;
+  font-size: 8px;
+}
+.input-group .btn-stack .btn:focus, .input-group .btn-stack form.bootstrap input[type=color]:focus, form.bootstrap .input-group .btn-stack input[type=color]:focus {
+  box-shadow: none;
+}
+.input-group .btn-stack .btn + .btn, .input-group .btn-stack form.bootstrap input[type=color] + .btn, form.bootstrap .input-group .btn-stack input[type=color] + .btn, .input-group .btn-stack form.bootstrap .btn + input[type=color], form.bootstrap .input-group .btn-stack .btn + input[type=color], .input-group .btn-stack form.bootstrap input[type=color] + input[type=color], form.bootstrap .input-group .btn-stack input[type=color] + input[type=color] {
+  border-top: 1px solid #ced4da;
+}
+
+.input-group .btn-increment {
+  width: 32px;
+  text-align: center;
+  border: 1px solid #ced4da;
+}
+
+html, body {
+  height: 100%;
+}
+
+.scoreboard-body {
+  background: linear-gradient(to bottom, #333333 0%, #0e0e0e 100%);
+}
+
+.static-view {
+  user-select: none;
+}
+
+@font-face {
+  font-family: "Chunk Five Ex";
+  src: url(fonts/chunk_five_ex.ttf);
+}
+@font-face {
+  font-family: "Varsity";
+  src: url(fonts/varsity_regular.ttf);
+}
+@font-face {
+  font-family: "Gunplay";
+  src: url(fonts/gunplay_rg.ttf);
+}
+h1#title-head {
+  background-color: #fff;
+  font-family: "Chunk Five Ex";
+  text-align: center;
+  font-size: 10vmin;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+h1#title-head span {
+  color: red;
+  margin: 10px 0;
+}
+h1#title-head span + span {
+  color: blue;
+}
+
+.scoreboard {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  margin: 0 5vw;
+}
+
+.scorecard {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  flex: 1;
+  margin: 0 2vw;
+  max-width: 35vmax;
+}
+
+.title, .score {
+  text-align: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.title {
+  font-family: "Varsity";
+  text-transform: uppercase;
+  font-size: 12vh;
+}
+
+.score {
+  font-family: "Chunk Five Ex";
+  display: flex;
+  font-size: 35vh;
 }
 
 /*# sourceMappingURL=main.css.map */
